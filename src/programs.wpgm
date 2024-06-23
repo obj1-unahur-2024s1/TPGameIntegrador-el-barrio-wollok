@@ -1,0 +1,15 @@
+
+import wollok.game.*
+import overcooked.*
+import items.*
+import tiles.*
+import statusBar.*
+import screens.*
+
+program cookingRalf{
+	game.width(gameManager.width() + status.width())
+	game.height(gameManager.height())
+	game.title("cocina del barrio")
+	screenManager.startScreen()	
+	game.start()
+}

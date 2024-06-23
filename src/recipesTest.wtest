@@ -1,0 +1,59 @@
+import tiles.*
+import items.*
+import statusBar.*
+
+describe "Recipe requirements test"{
+	var tomato = new Ingredient(name="tomato")
+	var lettuce = new Ingredient(name="lettuce")
+	var meat = new Ingredient(name="meat",state=chopped)
+	var recipeTL = new Recipe(ingredients=[tomato,lettuce])
+	var recipeTTL = new Recipe(ingredients=[tomato,tomato,lettuce])
+	var plateTL = new Plate(ingredients=[tomato,lettuce])
+	var plateLT = new Plate(ingredients=[lettuce,tomato])
+	var plateTTL = new Plate(ingredients=[tomato,tomato,lettuce])
+	var plateTM = new Plate(ingredients=[tomato,meat])
+	var plateLTCut = new Plate(ingredients=[lettuce,new Ingredient(name="tomato",state=chopped)])
+	
+	test "Same ingredients are accepted" {
+		assert.that(recipeTL.plateMeetsRequierements(plateTL))
+	}
+	
+	test "Same ingredients, (with more than one per type) is accepted" {
+		assert.that(recipeTTL.plateMeetsRequierements(plateTTL))
+	}
+	
+	test "Less ingredient types are not accepted" {
+		assert.notThat(recipeTL.plateMeetsRequierements(new Plate(ingredients=[tomato])))
+	}
+	
+	test "Extra ingredient types are not accepted" {
+		assert.notThat(new Recipe(ingredients=[tomato]).plateMeetsRequierements(plateTL))
+	}
+	
+	test "Different ingredient types are not accepted" {
+		assert.notThat(recipeTL.plateMeetsRequierements(plateTM))
+	}
+	
+	test "different order is accepted" {
+		assert.that(recipeTL.plateMeetsRequierements(plateLT))
+	}
+	
+	test "all ingredients ok but fewer than expected is not accepted" {
+		assert.notThat(recipeTTL.plateMeetsRequierements(plateTL))
+	}
+	
+	test "all ingredients ok but more than expected is not accepted" {
+		assert.notThat(recipeTL.plateMeetsRequierements(plateTTL))
+	}
+	
+	// State of expected plate ingredients
+	
+	test "If one ingredient is in a different state it is not accepted" {
+		assert.notThat(recipeTL.plateMeetsRequierements(plateLTCut))
+	}
+	
+	test "If one repeated ingredient is in a different state it is not accepted" {
+		plateLTCut.ingredients().add(tomato)
+		assert.notThat(recipeTTL.plateMeetsRequierements(plateLTCut))
+	}
+}

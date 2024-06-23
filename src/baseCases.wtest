@@ -1,0 +1,88 @@
+import items.*
+import overcooked.*
+import wollok.game.*
+import tiles.*
+import soundProducer.*
+
+describe "I really like these tests :)" {
+
+	var player = new Player(position = game.origin(), character = "rasta")
+	var meat = new Ingredient(name = "meat", position = game.at(0, 1))
+
+	method initialize() {
+		soundProducer.provider(soundProviderMock)
+		game.clear()
+		player = new Player(position = game.origin(), character = "rasta")
+		game.addVisual(player)
+		// meat.position(game.at(0,1))
+		meat = new Ingredient(name = "meat", position = game.at(0, 1))
+		game.addVisual(meat)
+		player.pickup(meat)
+	}
+
+	test "A player can move to a specific position" {
+		player.moveN(up, 3)
+		player.moveN(right, 3)
+		assert.equals(game.at(3, 3),player.position())
+	}
+
+	test "A player must be facing to the last direction he moved" {
+		player.moveN(right, 4)
+		player.moveN(left, 2)
+		assert.equals(player.facingDirection(), left)
+	}
+
+	test "After picking up an item it must follow the player" {
+		player.action()
+		player.moveN(up, 4)
+		assert.equals(meat.position(), game.at(0, 5))
+	}
+
+	test "A picked item must always be in front of the player" {
+		player.action()
+		player.moveN(right, 5)
+		assert.equals(meat.position(), game.at(6, 0))
+	}
+
+//canDropItem no longer exists
+
+//	test "An item can not be dropped on top of another item that is not a container" {
+//		var anotherMeat = new Ingredient(name = "meat", position = game.at(9, 0), state = "new")
+//		game.addVisual(anotherMeat)
+//		player.action()
+//		player.moveN(right, 8)
+//		assert.notThat(player.canDropItem())
+//	}
+//
+//	test "A player can drop an item" {
+//		player.action()
+//		player.moveN(up, 9)
+//		player.moveN(right, 4)
+//		assert.that(player.canDropItem())
+//	}
+
+	test "An item can't be picked if its being picked by a player" {
+		var player1 = new Player(position = game.origin(), character = "rasta")
+		player1.pickup(meat)
+		assert.notThat(meat.isPickable())
+	}
+
+	test "A player can't pick an item from the other player's hands" {		
+		var player2 = new Player(position = game.at(0, 2), character = "rasta")		
+		player2.faceTowards(down)
+		player2.action()
+		assert.notThat(player2.isPicking(meat))
+	}
+
+	test "A player can't walk through a desk" {
+		game.addVisual(new Desk(position = game.at(0, 1)))
+		player.move(up)
+		assert.equals(game.origin(), player.position())
+	}
+
+	test "A player can't walk out of bounds" {
+		player.move(down)
+		assert.equals(game.origin(), player.position())
+	}
+
+}
