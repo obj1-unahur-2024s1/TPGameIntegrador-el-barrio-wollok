@@ -1,4 +1,4 @@
-# Cocina de Barrio (<- borrar y completar)
+# Cocina de Barrio 
 
 ## Equipo de desarrollo
 
