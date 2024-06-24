@@ -1,8 +1,8 @@
-# Nombre del juego (<- borrar y completar)
+# Cocina de Barrio (<- borrar y completar)
 
 ## Equipo de desarrollo
 
-- Alguien
+- Lucas,
 - Persona
 - etc.
 
