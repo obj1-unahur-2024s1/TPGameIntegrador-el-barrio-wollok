@@ -13,6 +13,7 @@
 (agregar)
 
 ## Reglas de Juego / Instrucciones
+Pausa = Espacio
 
 Jugador 1: 
 Arriba= W
@@ -27,8 +28,8 @@ Arriba= ↑
 Abajo= ↓
 Izquierda= ←
 Derecha= →
-Accion= P
-Agarrar= O
+Accion= M
+Agarrar= N
 
 
 
