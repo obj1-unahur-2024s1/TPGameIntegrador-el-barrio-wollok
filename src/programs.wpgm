@@ -6,7 +6,7 @@ import tiles.*
 import statusBar.*
 import screens.*
 
-program cookingRalf{
+program cocinaDelBarrio{
 	game.width(gameManager.width() + status.width())
 	game.height(gameManager.height())
 	game.title("cocina del barrio")
