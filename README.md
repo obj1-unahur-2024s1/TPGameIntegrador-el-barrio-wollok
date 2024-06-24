@@ -7,8 +7,6 @@
 - Facundo,Rodriguez
 - Irina,Bellota
 - Magno,Telechea
-- Persona
-- etc.
 
 ## Capturas
 
