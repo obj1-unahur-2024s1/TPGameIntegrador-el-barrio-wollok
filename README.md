@@ -25,7 +25,6 @@ Accion= ctrl
 Agarrar= shift
 
 Jugador 2:
-
 Arriba= ↑
 Abajo= ↓
 Izquierda= ←
