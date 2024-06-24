@@ -5,6 +5,8 @@
 - Lucas,Maidana
 - Kevin,Pallero
 - Facundo,Rodriguez
+- Irina,Bellota
+- Magno,Telechea
 - Persona
 - etc.
 
@@ -23,6 +25,7 @@ Accion= ctrl
 Agarrar= shift
 
 Jugador 2:
+
 Arriba= ↑
 Abajo= ↓
 Izquierda= ←
