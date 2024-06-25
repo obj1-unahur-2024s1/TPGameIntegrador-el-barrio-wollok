@@ -7,33 +7,33 @@ class Item inherits Visual {
 	var property owner= null
 
 	override method position(){
-			if(owner != null)return owner.itemPosition()
+			if(owner != null)return owner.posicionDeItem()
 			else return position
 	}
 
-	method action(somePlayer) {
-		somePlayer.drop()
+	method accion(somePlayer) {
+		somePlayer.dejar()
 	}
 	
-	override method isPickable() {
+	override method sePuedeAgarrar() {
 		return owner == null
 	}
 	
-	method trash(){
+	method basura(){
 		game.removeVisual(self)
 	}
 
-	method canDeliver()
+	method puedeEntregarse()
 
-	method isFood() = false
+	method esComida() = false
 
-	override method interact(somePlayer) {
-		if (self.isPickable()) somePlayer.pickup(self)
+	override method interactuar(somePlayer) {
+		if (self.sePuedeAgarrar()) somePlayer.agarrar(self)
 	}
 
-	override method canContain(item) = false
+	override method puedeContener(item) = false
 	
-	override method walkable()=true
+	override method puedeCaminar()=true
 	
 	method refreshImage(){
 		game.removeVisual(self)
@@ -42,7 +42,7 @@ class Item inherits Visual {
 	
 	method spawnerImage()
 
-	override method canInteract()=self.isPickable()
+	override method puedeInteractuar()=self.sePuedeAgarrar()
 }
 
 object noItem {
@@ -57,22 +57,22 @@ object noItem {
 	method move(no, importa) {
 	}
 
-	method isPickable() = true
+	method sePuedeAgarrar() = true
 
-	method action(somePlayer) {
-		somePlayer.interactWithFront()
+	method accion(somePlayer) {
+		somePlayer.interaccionDelFrente()
 	}
 	
-	method canInteract()=false
+	method puedeInteractuar()=false
 	
-	method canDeliver()=false
+	method puedeEntregarse()=false
 
 	method position(noimporta) {
 	}
 
-	method canContain(item) = true
+	method puedeContener(item) = true
 
-	method isFood() = false
+	method esComida() = false
 
 }
 
@@ -85,9 +85,9 @@ class Ingredient inherits Item {
 
 	method clone() = new Ingredient(name = name, owner = owner, position = self.position(), state = state)
 
-	override method canDeliver()=false
+	override method puedeEntregarse()=false
 
-	override method isFood() = true
+	override method esComida() = true
 	
 	method specialState() = state !== fresh
 
@@ -134,7 +134,7 @@ class Plate inherits Item {
 
 	var property ingredients = []
 
-	override method canContain(item) = item.isFood()
+	override method puedeContener(item) = item.esComida()
 
 	override method image() = "plate.png"
 
@@ -145,13 +145,13 @@ class Plate inherits Item {
 		food.owner(self)
 	}
 
-	override method trash(){
+	override method basura(){
 		super()
 		ingredients.forEach({ing=>game.removeVisual(ing)})
 	}
 
-	override method droppedOnTop(item) {
-		if (item.isFood()) self.addIngredient(item)
+	override method ponerEncima(item) {
+		if (item.esComida()) self.addIngredient(item)
 	}	
 	
 	method delivered(){
@@ -159,12 +159,12 @@ class Plate inherits Item {
 		game.removeVisual(self)
 	}
 	
-	override method canDeliver()= true
+	override method puedeEntregarse()= true
 	
 	method clone() = new Plate(ingredients=[],position=position)
 
 	override method spawnerImage() = "plate-spawner.png"
 
-	method itemPosition()=self.position()
+	method posicionDeItem()=self.position()
 }
 

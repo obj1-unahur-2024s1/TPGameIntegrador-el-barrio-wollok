@@ -2,21 +2,21 @@ import wollok.game.*
 import items.*
 import soundProducer.*
 
-object gameManager {
+object administradorDelJuego {
 
-	// ToDo: lista jugadores
+	// Todo: lista jugadores
 	var property height = 14
-	var property width = 22 // values suited for a 1280x720 screen
+	var property width = 22 
 
-	method positionIsBetweenBounds(aPosition) {
+	method posicionLimiteEntre(aPosition) {
 		return aPosition.x() >= 0 && aPosition.x() < width && aPosition.y() >= 0 && aPosition.y() < height
 	}
 
-	method upperRightCorner() {
+	method esquinaSuperiorDerecha() {
 		return game.at(width - 1, height - 1)
 	}
 	
-	method bottomRightCorner(){
+	method esquinaInferiorDerecha(){
 		return game.at(width-1,0)
 	}
 
@@ -30,7 +30,7 @@ object gameManager {
 
 class Visual {
 
-	var position = game.origin() // there are subclasses that don't use this atribute
+	var position = game.origin() // algunas subclases no usan este atributo
 
 	method position() = position
 
@@ -38,29 +38,29 @@ class Visual {
 		position = newPosition
 	}
 	
-	method canDoSomething()=false
+	method puedeHacerAlgo()=false
 
-	method isPickable()
+	method sePuedeAgarrar()
 
 	method image()
 
-	method walkable() = true
+	method puedeCaminar() = true
 
 	method move(direction, n) {
 		position = direction.move(position, n)
 	}
 
-	method canContain(item) = true
+	method puedeContener(item) = true
 
-	method droppedOnTop(item) {
+	method ponerEncima(item) {
 	}
 
-	method do(somePlayer) {
+	method hacer(somePlayer) {
 	}
 
-	method canInteract() = true
+	method puedeInteractuar() = true
 
-	method interact(somePlayer) {
+	method interactuar(somePlayer) {
 	}
 
 }
@@ -70,24 +70,24 @@ class Player inherits Visual {
 
 	var property character = null
 	var property facingDirection = up
-	var property carriedItem = noItem
+	var property itemAgarrado = noItem
 
-	// basic behaviour
+	// compartamiento basicos
 
-	override method walkable() = false
+	override method puedeCaminar() = false
 
 	override method image() = character + "_" + facingDirection.text() + ".png"
 
-	override method canContain(item) = false
+	override method puedeContener(item) = false
 	
 
-	// movement
-	method move(direction) {
-		var nextPosition = direction.move(position, 1) // position=original position
-		if (self.positionIsWalkable(nextPosition)) {
-			self.move(direction, 1)
+	// movimiento
+	method move(direccion) {
+		var sigPosicion= direccion.move(position, 1) // position=original position
+		if (self.positionIspuedeCaminar(sigPosicion)) {
+			self.move(direccion, 1)
 		}
-		self.faceTowards(direction)
+		self.direccionDeLaCara(direccion)
 		self.refresh()
 	}
 
@@ -96,7 +96,7 @@ class Player inherits Visual {
 		n.times({ x => self.move(direction)})
 	}
 
-	method faceTowards(direction) {
+	method direccionDeLaCara(direction) {
 		facingDirection = direction
 	}
 
@@ -105,65 +105,65 @@ class Player inherits Visual {
 		game.addVisual(self)
 	}
 
-	// pickup/drop
-	method action() {carriedItem.action(self)}
+	// agarrar /dejar
+	method accion() {itemAgarrado.accion(self)}
 	
-	method pickup(item) {
-		soundProducer.sound("sounds/pickup.mp3").play()
+	method agarrar(item) {
+		soundProducer.sound("sounds/agarrar.mp3").play()
 		item.owner(self)
-		if(item.isFood())item.refreshImage()
-		carriedItem = item
+		if(item.esComida())item.refreshImage()
+		itemAgarrado = item
 	}
 
-	method drop() {
-		if(!self.frontElements().all({elem=>!elem.canContain(carriedItem)})){
-			carriedItem.owner(null)
-			carriedItem.position(self.itemPosition())
-			var frontContainersForItem = game.colliders(carriedItem).filter({ elem => elem.canContain(carriedItem)})
-			if (frontContainersForItem.isEmpty().negate()) frontContainersForItem.last().droppedOnTop(carriedItem)
-			carriedItem = noItem
-			const dropSound = soundProducer.sound("sounds/drop.mp3")
-			dropSound.volume(0.5)
-			dropSound.play()			
+	method dejar() {
+		if(!self.elementosFrontales().all({elem=>!elem.puedeContener(itemAgarrado)})){
+			itemAgarrado.owner(null)
+			itemAgarrado.position(self.posicionDeItem())
+			var frontContainersForItem = game.colliders(itemAgarrado).filter({ elem => elem.puedeContener(itemAgarrado)})
+			if (frontContainersForItem.isEmpty().negate()) frontContainersForItem.last().ponerEncima(itemAgarrado)
+			itemAgarrado = noItem
+			const sonidoDejarComida = soundProducer.sound("sounds/dejar.mp3")
+			sonidoDejarComida.volume(0.5)
+			sonidoDejarComida.play()			
 		}
 	}
-	method isPicking(item) {
-		return carriedItem == item
+	method estaAgarrando(item) {
+		return itemAgarrado == item
 	}
 	
-	method frontElements() = facingDirection.move(position, 1).allElements()
+	method elementosFrontales() = facingDirection.move(position, 1).allElements()
 
-	method frontElementsThatApply(criteria)=self.frontElements().filter(criteria)
+	method elementosFrontalesAplicados(criteria)=self.elementosFrontales().filter(criteria)
 
 
-	override method isPickable() = false
+	override method sePuedeAgarrar() = false
 	
-	method itemPosition() = facingDirection.move(position, 1)
+	method posicionDeItem() = facingDirection.move(position, 1)
 		
 	
 
-	// interaction
-	method interactWithFront() {
-		const frontInteractiveElements=self.frontElementsThatApply({ elem => elem.canInteract()})
-		if (frontInteractiveElements.isEmpty().negate()) frontInteractiveElements.last().interact(self) // forEach({ x => x.interact(self)})
+	// interaccion
+	method interaccionDelFrente() {
+		const elementosInteractivosDelFrente=self.elementosFrontalesAplicados({ elem => elem.puedeInteractuar()})
+		if (elementosInteractivosDelFrente.isEmpty().negate()) elementosInteractivosDelFrente.last().interactuar(self) 
 	}
 
-	method hasSomethingInFront() = !self.frontElements().isEmpty()
+	method hayAlgoAdelante() = !self.elementosFrontales().isEmpty()
 
-	// do
-	method do() {
-		const doableFrontElements = self.frontElements().filter({elem=>elem.canDoSomething()})
-		if (!doableFrontElements.isEmpty()) doableFrontElements.last().do(self) // maybe this should be a forEach or first()
+	// hacer
+	method hacer() {
+		const dobleElementosFrontales = self.elementosFrontales().filter({elem=>elem.puedeHacerAlgo()})
+		if (!dobleElementosFrontales.isEmpty()) dobleElementosFrontales.last().hacer(self) // maybe this should be a forEach or first()
 	}
 
 	// metodos que deberian ser de posicion pero no se como hacerlo
-	method positionIsWalkable(aPosition) {
-		return aPosition.allElements().all({ element => element.walkable() }) && gameManager.positionIsBetweenBounds(aPosition)
+	method positionIspuedeCaminar(aPosition) {
+		return aPosition.allElements().all({ element => element.puedeCaminar() }) && administradorDelJuego.posicionLimiteEntre(aPosition)
 	}
 
 }
 
-//Directions
+//Direcciones
 class Direction {
 
 	method text()

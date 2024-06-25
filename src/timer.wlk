@@ -53,7 +53,7 @@ class ProgressBar inherits Visual{
 	var amountOfImages
 	var timer
 		
-	override method isPickable()=false
+	override method sePuedeAgarrar()=false
 	
 	method start(){
 		timer.start()
@@ -82,8 +82,8 @@ class Digit inherits Visual{
 			numberAsString.charAt(digitPosition)
 	}
 	override method image() = "numbers/"+self.correspondingDigit()+".png"
-	override method isPickable()=false
-	override method canContain(item)=false
+	override method sePuedeAgarrar()=false
+	override method puedeContener(item)=false
 }
 
 object numberDisplayGenerator{

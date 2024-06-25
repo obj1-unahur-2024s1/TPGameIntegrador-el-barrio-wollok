@@ -6,9 +6,9 @@ import soundProducer.*
 
 class Tile inherits Visual {
 
-	override method isPickable() = false
+	override method sePuedeAgarrar() = false
 
-	override method walkable() = false
+	override method puedeCaminar() = false
 
 }
 
@@ -18,10 +18,10 @@ class DeliverSpot inherits Tile {
 
 	override method image() = "exit-" + facing.text()+".png"
 
-	override method canContain(item) = item.canDeliver() &&
+	override method puedeContener(item) = item.puedeEntregarse() &&
 											  status.recipes().any({ recipe => recipe.plateMeetsRequierements(item)})
 
-	override method droppedOnTop(item) {
+	override method ponerEncima(item) {
 		self.deliver(item)
 	}
 
@@ -35,9 +35,9 @@ class DeliverSpot inherits Tile {
 }
 
 class Trash inherits Tile{
-	override method image()="trash.png"
+	override method image()="basura.png"
 	
-	override method droppedOnTop(item){
+	override method ponerEncima(item){
 		item.trash()
 	}
 }
@@ -46,9 +46,9 @@ class Desk inherits Tile {
 
 	override method image() = "desk.png"
 
-	override method canContain(item) = true
+	override method puedeContener(item) = true
 
-	override method droppedOnTop(item) {
+	override method ponerEncima(item) {
 	}
 
 }
@@ -59,13 +59,13 @@ class Spawner inherits Tile {
 
 	override method position() = toSpawnIngredient.position()
 
-	override method canContain(item) = false
+	override method puedeContener(item) = false
 
-	override method interact(somePlayer) {
+	override method interactuar(somePlayer) {
 		var clonedIngredient = toSpawnIngredient.clone()
 //		clonedIngridient.position(self.position())
 		game.addVisual(clonedIngredient)
-		somePlayer.pickup(clonedIngredient)
+		somePlayer.agarrar(clonedIngredient)
 	}
 
 	override method image() = toSpawnIngredient.spawnerImage()
@@ -80,7 +80,7 @@ class ChoppingDesk inherits Tile {
 
 	override method image() = "cuttingDesk.png"
 
-	override method do(somePlayer) {
+	override method hacer (somePlayer) {
 		if (placedIngredient != noItem) self.chop()
 	}
 
@@ -94,11 +94,11 @@ class ChoppingDesk inherits Tile {
 		}
 	}
 	
-	override method canDoSomething()=true
+	override method puedeHacerAlgo()=true
 
-	override method canContain(item) = item.isFood()&& item.choppable()&& placedIngredient == noItem
+	override method puedeContener(item) = item.esComida()&& item.choppable()&& placedIngredient == noItem
 
-	override method droppedOnTop(item) {
+	override method ponerEncima(item) {
 			placedIngredient = item
 	}
 

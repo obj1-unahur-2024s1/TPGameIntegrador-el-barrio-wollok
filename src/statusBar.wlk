@@ -13,11 +13,11 @@ object status inherits Visual {
 	var property score = 0
 	var width = 3
 
-	override method isPickable() = false
+	override method sePuedeAgarrar() = false
 
 	override method image() = "status-bar.jpg"
 
-	override method position() = game.at(gameManager.width(), 0)
+	override method position() = game.at(administradorDelJuego.width(), 0)
 
 	method width() = width
 
@@ -101,11 +101,11 @@ class Recipe {
 	method show(yCount) {
 		var ingCount = 0
 		ingredients.forEach({ ingredient =>
-			ingredient.position(game.at(gameManager.width() + ingCount, self.height() * yCount))
+			ingredient.position(game.at(administradorDelJuego.width() + ingCount, self.height() * yCount))
 			game.addVisual(ingredient)
 			ingCount = ingCount + 1
 		})
-		progressBar.position(game.at(gameManager.width(),self.height()*yCount + 1))
+		progressBar.position(game.at(administradorDelJuego.width(),self.height()*yCount + 1))
 		game.addVisual(progressBar)
 	}
 

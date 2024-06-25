@@ -39,7 +39,7 @@ object background inherits Visual {
 
 	var property image = null
 
-	override method isPickable() = false
+	override method sePuedeAgarrar() = false
 
 }
 
@@ -199,13 +199,13 @@ object playScreen inherits Screen {
 	}
 
 	method start() {
-		player1.carriedItem(noItem)
-		player2.carriedItem(noItem)
+		player1.itemAgarrado(noItem)
+		player2.itemAgarrado(noItem)
 		player1.character(character1)
 		player2.character(character2)
 		status.start() // I shall not forget to keep this line when I implement the layout parser
 		var timer = new Timer(totalTime = levelCharacteristics.levelLength(), frecuency = 1, user = self)
-		var clockPosition = game.at(gameManager.centerX() - 1, gameManager.height() - 1)
+		var clockPosition = game.at(administradorDelJuego.centerX() - 1, administradorDelJuego.height() - 1)
 		numberDisplayGenerator.generateDigits(levelCharacteristics.levelLength() / 1000, timer, clockPosition)
 		timer.start()
 	}
@@ -220,19 +220,19 @@ object playScreen inherits Screen {
 
 	override method setInputs() {
 		// PLAYER 1
-		keyboard.up().onPressDo{ player1.move(up)}
-		keyboard.left().onPressDo{ player1.move(left)}
-		keyboard.down().onPressDo{ player1.move(down)}
-		keyboard.right().onPressDo{ player1.move(right)}
-		keyboard.o().onPressDo{ player1.action()}
-		keyboard.p().onPressDo{ player1.do()}
+		keyboard.w().onPressDo{ player1.move(up)}
+		keyboard.a().onPressDo{ player1.move(left)}
+		keyboard.s().onPressDo{ player1.move(down)}
+		keyboard.d().onPressDo{ player1.move(right)}
+		keyboard.shift().onPressDo{ player1.accion()}
+		keyboard.control().onPressDo{ player1.hacer()}
 			// PLAYER 2
-		keyboard.w().onPressDo{ player2.move(up)}
-		keyboard.a().onPressDo{ player2.move(left)}
-		keyboard.s().onPressDo{ player2.move(down)}
-		keyboard.d().onPressDo{ player2.move(right)}
-		keyboard.shift().onPressDo{ player2.action()}
-		keyboard.control().onPressDo{ player2.do()}
+		keyboard.up().onPressDo{ player2.move(up)}
+		keyboard.left().onPressDo{ player2.move(left)}
+		keyboard.down().onPressDo{ player2.move(down)}
+		keyboard.right().onPressDo{ player2.move(right)}
+		keyboard.n().onPressDo{ player2.accion()}
+		keyboard.m().onPressDo{ player2.hacer()}
 	}
 
 }
@@ -254,13 +254,13 @@ object level2 inherits LevelCharacteristics {
 	method levelVisualObjects() {
 		const middleCurvex1 = 9
 		const middleCurvex2 = middleCurvex1 + 4
-		const middleSectionHeightDown = 6
-		const middleSectionHeightUp = middleSectionHeightDown - 1
+		const middleSectionHeightdown = 6
+		const middleSectionHeightUp = middleSectionHeightdown - 1
 		const levelObjects = [ // desks
-		self.addNDesks(game.origin(), 6, up), self.addNDesks(game.at(0, game.height() - 1), 4, down), self.addNDesks(game.at(1, game.height() - 1), 9, right), self.addNDesks(game.at(1, 0), 1, right), self.addNDesks(game.at(3, 0), 7, right), // weird middle part
-		self.addNDesks(game.at(middleCurvex1, 1), middleSectionHeightDown, up), self.addNDesks(game.at(middleCurvex1, game.height() - 2), middleSectionHeightUp, down), self.addNDesks(game.at(middleCurvex1 + 1, middleSectionHeightDown), middleCurvex2 - middleCurvex1 - 1, right), self.addNDesks(game.at(middleCurvex1 + 1, game.height() - 1 - middleSectionHeightUp), middleCurvex2 - middleCurvex1 - 1, right), self.addNDesks(game.at(middleCurvex2, middleSectionHeightDown), middleSectionHeightDown + 1, down), self.addNDesks(game.at(middleCurvex2, game.height() - 1), middleSectionHeightUp + 1, down), // end of weird middle part
-		self.addNDesks(game.at(middleCurvex2, game.height() - 1), 5, right), self.addNDesks(game.at(middleCurvex2 + 6, game.height() - 1), 3, right), self.addNDesks(game.at(middleCurvex2 + 1, 0), 2, right), self.addNDesks(game.at(middleCurvex2 + 5, 0), 4, right), self.addNDesks(gameManager.upperRightCorner().down(1), 3, down), self.addNDesks(gameManager.bottomRightCorner().up(1), 8, up) ]
-		levelObjects.add([ new DeliverSpot(position = game.at(gameManager.width() - 1, 9)), new ChoppingDesk(position = game.at(middleCurvex2 + 3, 0)), new ChoppingDesk(position = game.at(middleCurvex2 + 4, 0)), new Trash(position = game.at(middleCurvex2 + 5, game.height() - 1)), new Spawner(toSpawnIngredient = new Ingredient(name = "tomato", position = game.at(0, 6))), new Spawner(toSpawnIngredient = new Ingredient(name = "lettuce", position = game.at(0, 7))), new Spawner(toSpawnIngredient = new Ingredient(name = "meat", position = game.at(0, 8))), new Spawner(toSpawnIngredient = new Ingredient(name = "potato", position = game.at(0, 9))), new Spawner(toSpawnIngredient = new Plate(position = game.at(2, 0))), new Plate(position=game.at(3,0)), new Plate(position=game.at(4,0)) ])
+		self.addNDesks(game.origin(), 6, up), self.addNDesks(game.at(0, game.height() - 1), 4,down), self.addNDesks(game.at(1, game.height() - 1), 9, right), self.addNDesks(game.at(1, 0), 1, right), self.addNDesks(game.at(3, 0), 7, right), // weird middle part
+		self.addNDesks(game.at(middleCurvex1, 1), middleSectionHeightdown, up), self.addNDesks(game.at(middleCurvex1, game.height() - 2), middleSectionHeightUp, down), self.addNDesks(game.at(middleCurvex1 + 1, middleSectionHeightdown), middleCurvex2 - middleCurvex1 - 1, right), self.addNDesks(game.at(middleCurvex1 + 1, game.height() - 1 - middleSectionHeightUp), middleCurvex2 - middleCurvex1 - 1, right), self.addNDesks(game.at(middleCurvex2, middleSectionHeightdown), middleSectionHeightdown + 1, down), self.addNDesks(game.at(middleCurvex2, game.height() - 1), middleSectionHeightUp + 1, down), // end of weird middle part
+		self.addNDesks(game.at(middleCurvex2, game.height() - 1), 5, right), self.addNDesks(game.at(middleCurvex2 + 6, game.height() - 1), 3, right), self.addNDesks(game.at(middleCurvex2 + 1, 0), 2, right), self.addNDesks(game.at(middleCurvex2 + 5, 0), 4, right), self.addNDesks(administradorDelJuego.esquinaSuperiorDerecha().down(1), 3, down), self.addNDesks(administradorDelJuego.esquinaInferiorDerecha().up(1), 8, up) ]
+		levelObjects.add([ new DeliverSpot(position = game.at(administradorDelJuego.width() - 1, 9)), new ChoppingDesk(position = game.at(middleCurvex2 + 3, 0)), new ChoppingDesk(position = game.at(middleCurvex2 + 4, 0)), new Trash(position = game.at(middleCurvex2 + 5, game.height() - 1)), new Spawner(toSpawnIngredient = new Ingredient(name = "tomato", position = game.at(0, 6))), new Spawner(toSpawnIngredient = new Ingredient(name = "lettuce", position = game.at(0, 7))), new Spawner(toSpawnIngredient = new Ingredient(name = "meat", position = game.at(0, 8))), new Spawner(toSpawnIngredient = new Ingredient(name = "potato", position = game.at(0, 9))), new Spawner(toSpawnIngredient = new Plate(position = game.at(2, 0))), new Plate(position=game.at(3,0)), new Plate(position=game.at(4,0)) ])
 		return levelObjects.flatten()
 	}
 
@@ -284,8 +284,8 @@ object level1 inherits LevelCharacteristics {
 	method levelNumber() = 1
 
 	method levelVisualObjects() {
-		var desks = [ self.addNDesks(game.origin(),6,up), self.addNDesks(game.origin().up(7),gameManager.height()-7,up), self.addNDesks(gameManager.upperRightCorner(),gameManager.width()-2,left), self.addNDesks(game.at(gameManager.centerX(),gameManager.height()-2),gameManager.height()-2,down), self.addNDesks(game.origin().right(1),2,right), self.addNDesks(gameManager.upperRightCorner().down(1),game.height()-1-5,down), self.addNDesks(gameManager.bottomRightCorner(), 4, up), self.addNDesks(game.origin().right(4),3,right), self.addNDesks(game.origin().right(8),gameManager.width()-12,right), self.addNDesks(gameManager.bottomRightCorner().left(1),2,left) ]
-		var stuff = [ new DeliverSpot(facing=left,position=game.origin().up(6)), new Trash(position=game.at(1,gameManager.height()-1)), new Spawner(toSpawnIngredient = new Ingredient(name="meat",state=fresh,position=gameManager.bottomRightCorner().left(3))), new Spawner(toSpawnIngredient = new Ingredient(name="potato",state=fresh,position=game.origin().right(3))), new ChoppingDesk(position=gameManager.bottomRightCorner().up(4)), new Spawner(toSpawnIngredient = new Plate(position = game.origin().right(7))) ]
+		var desks = [ self.addNDesks(game.origin(),6,up), self.addNDesks(game.origin().up(7),administradorDelJuego.height()-7,up), self.addNDesks(administradorDelJuego.esquinaSuperiorDerecha(),administradorDelJuego.width()-2,left), self.addNDesks(game.at(administradorDelJuego.centerX(),administradorDelJuego.height()-2),administradorDelJuego.height()-2,down), self.addNDesks(game.origin().right(1),2,right), self.addNDesks(administradorDelJuego.esquinaSuperiorDerecha().down(1),game.height()-1-5,down), self.addNDesks(administradorDelJuego.esquinaInferiorDerecha(), 4, up), self.addNDesks(game.origin().right(4),3,right), self.addNDesks(game.origin().right(8),administradorDelJuego.width()-12,right), self.addNDesks(administradorDelJuego.esquinaInferiorDerecha().left(1),2,left) ]
+		var stuff = [ new DeliverSpot(facing=left,position=game.origin().up(6)), new Trash(position=game.at(1,administradorDelJuego.height()-1)), new Spawner(toSpawnIngredient = new Ingredient(name="meat",state=fresh,position=administradorDelJuego.esquinaInferiorDerecha().left(3))), new Spawner(toSpawnIngredient = new Ingredient(name="potato",state=fresh,position=game.origin().right(3))), new ChoppingDesk(position=administradorDelJuego.esquinaInferiorDerecha().up(4)), new Spawner(toSpawnIngredient = new Plate(position = game.origin().right(7))) ]
 		var allObjects = desks.flatten()
 		allObjects.addAll(stuff)
 		return allObjects
@@ -309,7 +309,7 @@ class Score inherits Screen {
 	var stars = [ new Star(basePosition = self.starPosition(), xOffset=0), new Star(basePosition = self.starPosition(), xOffset=1), new Star(basePosition = self.starPosition(), xOffset=2) ]
 
 	override method setInputs() {
-		keyboard.enter().onPressDo({ screenManager.switchScreen(menu)})
+		keyboard.enter().onPressdo({ screenManager.switchScreen(menu)})
 	}
 
 	override method show() {

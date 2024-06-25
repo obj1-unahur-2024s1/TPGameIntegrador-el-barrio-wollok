@@ -7,8 +7,8 @@ import statusBar.*
 import screens.*
 
 program cocinaDelBarrio{
-	game.width(gameManager.width() + status.width())
-	game.height(gameManager.height())
+	game.width(administradorDelJuego.width() + status.width())
+	game.height(administradorDelJuego.height())
 	game.title("cocina del barrio")
 	screenManager.startScreen()	
 	game.start()

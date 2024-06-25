@@ -17,7 +17,7 @@ describe "I really like these tests :)" {
 		// meat.position(game.at(0,1))
 		meat = new Ingredient(name = "meat", position = game.at(0, 1))
 		game.addVisual(meat)
-		player.pickup(meat)
+		player.agarrar(meat)
 	}
 
 	test "A player can move to a specific position" {
@@ -33,13 +33,13 @@ describe "I really like these tests :)" {
 	}
 
 	test "After picking up an item it must follow the player" {
-		player.action()
+		player.accion()
 		player.moveN(up, 4)
 		assert.equals(meat.position(), game.at(0, 5))
 	}
 
 	test "A picked item must always be in front of the player" {
-		player.action()
+		player.accion()
 		player.moveN(right, 5)
 		assert.equals(meat.position(), game.at(6, 0))
 	}
@@ -63,15 +63,15 @@ describe "I really like these tests :)" {
 
 	test "An item can't be picked if its being picked by a player" {
 		var player1 = new Player(position = game.origin(), character = "rasta")
-		player1.pickup(meat)
-		assert.notThat(meat.isPickable())
+		player1.agarrar(meat)
+		assert.notThat(meat.sePuedeAgarrar())
 	}
 
 	test "A player can't pick an item from the other player's hands" {		
 		var player2 = new Player(position = game.at(0, 2), character = "rasta")		
-		player2.faceTowards(down)
-		player2.action()
-		assert.notThat(player2.isPicking(meat))
+		player2.faceTowards()
+		player2.accion()
+		assert.notThat(player2.estaAgarrando(meat))
 	}
 
 	test "A player can't walk through a desk" {
@@ -81,7 +81,7 @@ describe "I really like these tests :)" {
 	}
 
 	test "A player can't walk out of bounds" {
-		player.move(down)
+		player.move()
 		assert.equals(game.origin(), player.position())
 	}
 
