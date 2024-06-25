@@ -2,7 +2,7 @@ import tiles.*
 import items.*
 import statusBar.*
 
-describe "Recipe requirements test"{
+describe "pedidos requeridos test"{
 	var tomato = new Ingredient(name="tomato")
 	var lettuce = new Ingredient(name="lettuce")
 	var meat = new Ingredient(name="meat",state=chopped)
@@ -14,45 +14,42 @@ describe "Recipe requirements test"{
 	var plateTM = new Plate(ingredients=[tomato,meat])
 	var plateLTCut = new Plate(ingredients=[lettuce,new Ingredient(name="tomato",state=chopped)])
 	
-	test "Same ingredients are accepted" {
+	test "se acepta los mismos ingredientes" {
 		assert.that(recipeTL.plateMeetsRequierements(plateTL))
 	}
 	
-	test "Same ingredients, (with more than one per type) is accepted" {
+	test "se aceptan los mismos ingredientes por más de un tipo" {
 		assert.that(recipeTTL.plateMeetsRequierements(plateTTL))
 	}
 	
-	test "Less ingredient types are not accepted" {
+	test "no se aceptan menos los tipos de ingredientes" {
 		assert.notThat(recipeTL.plateMeetsRequierements(new Plate(ingredients=[tomato])))
 	}
 	
-	test "Extra ingredient types are not accepted" {
+	test "no se aceptan ingredientes de más" {
 		assert.notThat(new Recipe(ingredients=[tomato]).plateMeetsRequierements(plateTL))
 	}
 	
-	test "Different ingredient types are not accepted" {
+	test "diferentes tipos de ingredientes no son aceptados" {
 		assert.notThat(recipeTL.plateMeetsRequierements(plateTM))
 	}
 	
-	test "different order is accepted" {
+	test "una orden diferente es aceptado" {
 		assert.that(recipeTL.plateMeetsRequierements(plateLT))
 	}
 	
-	test "all ingredients ok but fewer than expected is not accepted" {
+	test "todos los ingredientes están bien pero no se acepta menos de los requeridos" {
 		assert.notThat(recipeTTL.plateMeetsRequierements(plateTL))
 	}
 	
-	test "all ingredients ok but more than expected is not accepted" {
-		assert.notThat(recipeTL.plateMeetsRequierements(plateTTL))
-	}
 	
 	// State of expected plate ingredients
 	
-	test "If one ingredient is in a different state it is not accepted" {
+	test "si algún ingrediente está en un estado distinto, no se acepta" {
 		assert.notThat(recipeTL.plateMeetsRequierements(plateLTCut))
 	}
 	
-	test "If one repeated ingredient is in a different state it is not accepted" {
+	test "si un ingrediente está en un estado distinto, no se acepta" {
 		plateLTCut.ingredients().add(tomato)
 		assert.notThat(recipeTTL.plateMeetsRequierements(plateLTCut))
 	}

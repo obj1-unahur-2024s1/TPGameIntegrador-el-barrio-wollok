@@ -65,22 +65,22 @@ object status inherits Visual {
 		})
 	}
 
-	method addRandomRecipe(levelRecipes) {
+	method addRandomRecipe(nivelRecipes) {
 		var newRecipeProbability = 5 // %
 		var randomNumber = 0.randomUpTo(100)
 		if (randomNumber > newRecipeProbability) {
-			var totalRecipesSize = levelRecipes.size()
+			var totalRecipesSize = nivelRecipes.size()
 			var randomRecipeIndex = 0.randomUpTo(totalRecipesSize - 1)
-			self.addRecipe(levelRecipes.get(randomRecipeIndex).clone())
+			self.addRecipe(nivelRecipes.get(randomRecipeIndex).clone())
 		}
 	}
 
 	method start() {
 		recipes.clear()
 		score = 0
-		game.schedule(500,{self.addRandomRecipe(screenManager.recipes())}) // first recipe is instant (almost because it has to wait for the level to load)
+		game.schedule(500,{self.addRandomRecipe(administradorDePantalla.recipes())}) // first recipe is instant (almost because it has to wait for the nivel to load)
 		const newRecipeSpacing = 11000
-		game.onTick(newRecipeSpacing, "random recipe", { if (recipes.size() <= 4) self.addRandomRecipe(screenManager.recipes())})
+		game.onTick(newRecipeSpacing, "random recipe", { if (recipes.size() <= 4) self.addRandomRecipe(administradorDePantalla.recipes())})
 	}	
 	
 	method showingNumber()= score
@@ -114,11 +114,6 @@ class Recipe {
 		ingredients.forEach({ ing => game.removeVisual(ing)})
 	}
 
-//	method plateMeetsRequierements(aPlate) {
-//		var plateIngredientsSet = self.cloneAsSet(aPlate.ingredients())
-//		var ingredientsAsSet = self.cloneAsSet(ingredients)
-//		return self.sameSizeOfSet(plateIngredientsSet, ingredientsAsSet) && self.sameSizeOfSet(plateIngredientsSet.intersection(ingredientsAsSet), plateIngredientsSet)
-//	}
 
 	method plateMeetsRequierements(aPlate)=	self.sameOccurrencesOfElements(aPlate.ingredients(), ingredients) && self.sameOccurrencesOfElements(ingredients, aPlate.ingredients())
 	
@@ -131,14 +126,14 @@ class Recipe {
 	}
 	
 	method timerFinishedAction(){
-//		console.println("Recipe expired")	
+
 		status.removeRecipe(self)
 	}
 	method sameSizeOfSet(aSet, otherSet) = aSet.size() == otherSet.size()
 
 	method cloneAsSet(list) = list.map({ x => x.clone() }).asSet()
 
-	method clone() {//used for copying the recipes from the level, does not save state of the progress bar.
+	method clone() {
 		return new Recipe(ingredients = self.cloneIngredients())
 	}
 	

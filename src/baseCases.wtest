@@ -6,13 +6,13 @@ import soundProducer.*
 
 describe "I really like these tests :)" {
 
-	var player = new Player(position = game.origin(), character = "rasta")
+	var player = new Player(position = game.origin(), character = "paulo")
 	var meat = new Ingredient(name = "meat", position = game.at(0, 1))
 
 	method initialize() {
 		soundProducer.provider(soundProviderMock)
 		game.clear()
-		player = new Player(position = game.origin(), character = "rasta")
+		player = new Player(position = game.origin(), character = "paulo")
 		game.addVisual(player)
 		// meat.position(game.at(0,1))
 		meat = new Ingredient(name = "meat", position = game.at(0, 1))
@@ -20,55 +20,40 @@ describe "I really like these tests :)" {
 		player.agarrar(meat)
 	}
 
-	test "A player can move to a specific position" {
+	test "el personaje se puede mover en una direccion en especifico" {
 		player.moveN(up, 3)
 		player.moveN(right, 3)
 		assert.equals(game.at(3, 3),player.position())
 	}
 
-	test "A player must be facing to the last direction he moved" {
+	test "el jugador debe mirar a la ultima direccion que se movio" {
 		player.moveN(right, 4)
 		player.moveN(left, 2)
 		assert.equals(player.facingDirection(), left)
 	}
 
-	test "After picking up an item it must follow the player" {
+	test "despues de agarrar un objeto debe seguir al jugador" {
 		player.accion()
 		player.moveN(up, 4)
 		assert.equals(meat.position(), game.at(0, 5))
 	}
 
-	test "A picked item must always be in front of the player" {
+	test "el objeto elegido siempre tiene que estar al frente del jugador" {
 		player.accion()
 		player.moveN(right, 5)
 		assert.equals(meat.position(), game.at(6, 0))
 	}
 
-//canDropItem no longer exists
 
-//	test "An item can not be dropped on top of another item that is not a container" {
-//		var anotherMeat = new Ingredient(name = "meat", position = game.at(9, 0), state = "new")
-//		game.addVisual(anotherMeat)
-//		player.action()
-//		player.moveN(right, 8)
-//		assert.notThat(player.canDropItem())
-//	}
-//
-//	test "A player can drop an item" {
-//		player.action()
-//		player.moveN(up, 9)
-//		player.moveN(right, 4)
-//		assert.that(player.canDropItem())
-//	}
 
 	test "An item can't be picked if its being picked by a player" {
-		var player1 = new Player(position = game.origin(), character = "rasta")
+		var player1 = new Player(position = game.origin(), character = "paulo")
 		player1.agarrar(meat)
 		assert.notThat(meat.sePuedeAgarrar())
 	}
 
 	test "A player can't pick an item from the other player's hands" {		
-		var player2 = new Player(position = game.at(0, 2), character = "rasta")		
+		var player2 = new Player(position = game.at(0, 2), character = "paulo")		
 		player2.faceTowards()
 		player2.accion()
 		assert.notThat(player2.estaAgarrando(meat))

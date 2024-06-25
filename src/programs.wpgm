@@ -10,6 +10,6 @@ program cocinaDelBarrio{
 	game.width(administradorDelJuego.width() + status.width())
 	game.height(administradorDelJuego.height())
 	game.title("cocina del barrio")
-	screenManager.startScreen()	
+	administradorDePantalla.empezarPantalla()	
 	game.start()
 }

@@ -6,32 +6,32 @@ import statusBar.*
 import timer.*
 import soundProducer.*
 
-object screenManager {
+object administradorDePantalla {
 
-	var property actualScreen = menu
+	var property pantallaActual = menu
 
 	var currentMusic
 
-	method switchScreen(newScreen) {
+	method cambiarPantalla(nuevaPantalla) {
 		game.clear()
 		currentMusic.stop()
-		actualScreen = newScreen
-		self.startScreen()
+		pantallaActual = nuevaPantalla
+		self.empezarPantalla()
 	}
 
-	method startScreen() {
-		background.image(actualScreen.background())
+	method empezarPantalla() {
+		background.image(pantallaActual.background())
 		game.addVisual(background)
-		game.schedule(10, { actualScreen.setInputs()}) // the schedule stops the next screen from the detecting the last screen's keyPress	
-		actualScreen.show()
-		currentMusic = soundProducer.sound("sounds/" + actualScreen.backgroundMusic())
+		game.schedule(10, { pantallaActual.indicarTeclas()}) // impide que la pantalla siguiente detecte la tecla de la ultima pantalla.	
+		pantallaActual.show()
+		currentMusic = soundProducer.sound("sounds/" + pantallaActual.backgroundMusic())
 		game.schedule(500, {
 			currentMusic.shouldLoop(true)
 			currentMusic.play()
 		})
 	}
 
-	method recipes() = actualScreen.recipes()
+	method recipes() = pantallaActual.recipes()
 
 }
 
@@ -43,33 +43,33 @@ object background inherits Visual {
 
 }
 
-class LevelButton {
+class NivelDeBoton {
 
-	var level
+	var nivel
 	var property selected = false
 	var property position = null
 
 	method image() {
-		return "LEVEL" + level.levelNumber() + self.selectionText() + ".png"
+		return "NIVEL" + nivel.numeroDeNivel() + self.textoSeleccionado() + ".png"
 	}
 
-	method levelNumber() = level.levelNumber()
+	method numeroDeNivel() = nivel.numeroDeNivel()
 
-	method selectionText() = if (menu.selectedButton().levelNumber() == level.levelNumber()) "H" else "" // no se porq pero no funciona comparar por identidad
+	method textoSeleccionado() = if (menu.botonSeleccionado().numeroDeNivel() == nivel.numeroDeNivel()) "H" else "" // no se porq pero no funciona comparar por identidad
 
-	method startLevel() {
-		playScreen.levelCharacteristics(level)
-		menu.setPlayScreenCharacters()
-		screenManager.switchScreen(playScreen)
+	method empezarNivel() {
+		playScreen.caracteristicasDelNivel(nivel)
+		menu.caracteristicasDeLaPantalla()
+		administradorDePantalla.cambiarPantalla(playScreen)
 	}
 
 }
 
-class Screen {
+class Pantalla {
 
 	method show()
 
-	method setInputs()
+	method indicarTeclas()
 
 	method background()
 
@@ -86,66 +86,66 @@ class Image {
 
 }
 
-object menu inherits Screen {
+object menu inherits Pantalla {
 
-	var character1Index = 0
-	var character2Index = 1
-	var property character1 = new Image(name = "rasta")
-	var property character2 = new Image(name = "alf")
-	var selectedButtonNumber = 0
+	var personaje1 = 0
+	var personaje2 = 1
+	var property person1 = new Image(name = "penny")
+	var property person2 = new Image(name = "paulo")
+	var botonSeleccionadoNumber = 0
 
 	override method background() = "menu_background.png"
 
 	override method backgroundMusic() = "backgroundMusic-menu-short.mp3"
 
-	method selectedButton() = self.buttons().get(selectedButtonNumber)
+	method botonSeleccionado() = self.buttons().get(botonSeleccionadoNumber)
 
-	override method setInputs() {
+	override method indicarTeclas() {
 		keyboard.backspace().onPressDo{ game.stop()}
-		keyboard.enter().onPressDo{ self.selectedButton().startLevel()}
-			// levels
+		keyboard.enter().onPressDo{ self.botonSeleccionado().empezarNivel()}
+			// nivels
 		keyboard.down().onPressDo{ self.selectChange(1)}
 		keyboard.s().onPressDo{ self.selectChange(1)}
 		keyboard.up().onPressDo{ self.selectChange(-1)}
 		keyboard.w().onPressDo{ self.selectChange(-1)}
 			// characters
-		keyboard.a().onPressDo{ self.character1SelectChange(-1)}
-		keyboard.d().onPressDo{ self.character1SelectChange(1)}
-		keyboard.left().onPressDo{ self.character2SelectChange(-1)}
-		keyboard.right().onPressDo{ self.character2SelectChange(1)}
+		keyboard.a().onPressDo{ self.person1SelectChange(-1)}
+		keyboard.d().onPressDo{ self.person1SelectChange(1)}
+		keyboard.left().onPressDo{ self.person2SelectChange(-1)}
+		keyboard.right().onPressDo{ self.person2SelectChange(1)}
 	}
 
-	method setPlayScreenCharacters() {
-		playScreen.character1(character1.name())
-		playScreen.character2(character2.name())
+	method caracteristicasDeLaPantalla() {
+		playScreen.person1(person1.name())
+		playScreen.person2(person2.name())
 	}
 
 	method circularNumberScroll(number, limit) {
 		return number.rem(limit).abs()
 	}
 
-	method character1SelectChange(delta) {
-		character1Index = self.circularNumberScroll(character1Index + delta, self.charactersNames().size())
-		character1.name(self.charactersNames().get(character1Index))
+	method person1SelectChange(delta) {
+		personaje1 = self.circularNumberScroll(personaje1 + delta, self.nombresDePersonajes().size())
+		person1.name(self.nombresDePersonajes().get(personaje1))
 	}
 
-	method character2SelectChange(delta) {
-		character2Index = self.circularNumberScroll(character2Index + delta, self.charactersNames().size())
-		character2.name(self.charactersNames().get(character2Index))
+	method person2SelectChange(delta) {
+		personaje2 = self.circularNumberScroll(personaje2 + delta, self.nombresDePersonajes().size())
+		person2.name(self.nombresDePersonajes().get(personaje2))
 	}
 
 	method limitBetweenListSize(list, number) {
 		return number.limitBetween(0, list.size() - 1)
 	}
 
-	method charactersNames() = [ "rasta", "alf" ]
+	method nombresDePersonajes() = [ "penny", "paulo" ]
 
 	method selectChange(delta) {
-		selectedButtonNumber = self.limitBetweenListSize(self.buttons(), selectedButtonNumber + delta)
+		botonSeleccionadoNumber = self.limitBetweenListSize(self.buttons(), botonSeleccionadoNumber + delta)
 	}
 
 	method buttons() {
-		return [ new LevelButton(level = level1), new LevelButton(level = level2) ]
+		return [ new NivelDeBoton(nivel = nivel1), new NivelDeBoton(nivel = nivel2) ]
 	}
 
 	override method show() {
@@ -156,8 +156,8 @@ object menu inherits Screen {
 			game.addVisual(button)
 			nextPosition = nextPosition.down(2)
 		})
-		self.showPickPlayer(game.at(2, game.height() / 2), character1, "pick-player1")
-		self.showPickPlayer(game.at(game.width() - 9, game.height() / 2), character2, "pick-player2")
+		self.showPickPlayer(game.at(2, game.height() / 2), person1, "pick-player1")
+		self.showPickPlayer(game.at(game.width() - 9, game.height() / 2), person2, "pick-player2")
 	}
 
 	method showPickPlayer(characterPosition, character, pickPlayerImageName) {
@@ -168,16 +168,16 @@ object menu inherits Screen {
 
 }
 
-object playScreen inherits Screen {
+object playScreen inherits Pantalla {
 
-	var property character1 = null
-	var property character2 = null
-	var property levelCharacteristics = level1
+	var property person1 = null
+	var property person2 = null
+	var property caracteristicasDelNivel = nivel1
 	var player1 = new Player()
 	var player2 = new Player()
 
 	override method show() {
-		levelCharacteristics.levelVisualObjects().forEach({ levelObject => game.addVisual(levelObject)})
+		caracteristicasDelNivel.nivelVisualObjects().forEach({ nivelObject => game.addVisual(nivelObject)})
 		self.start()
 		player1.position(game.center().right(5))
 		player2.position(game.center().left(5))
@@ -186,11 +186,11 @@ object playScreen inherits Screen {
 		game.addVisual(player2)
 	}
 
-	override method backgroundMusic() = "backgroundMusic-level" + levelCharacteristics.levelNumber() + ".mp3"
+	override method backgroundMusic() = "backgroundMusic-nivel" + caracteristicasDelNivel.numeroDeNivel() + ".mp3"
 
-	method levelNumber() = levelCharacteristics.levelNumber()
+	method numeroDeNivel() = caracteristicasDelNivel.numeroDeNivel()
 
-	method recipes() = levelCharacteristics.posibleRecipes()
+	method recipes() = caracteristicasDelNivel.posibleRecipes()
 
 	method addNDesks(basePosition, n, direction) {
 		var desks = []
@@ -201,24 +201,24 @@ object playScreen inherits Screen {
 	method start() {
 		player1.itemAgarrado(noItem)
 		player2.itemAgarrado(noItem)
-		player1.character(character1)
-		player2.character(character2)
+		player1.character(person1)
+		player2.character(person2)
 		status.start() // I shall not forget to keep this line when I implement the layout parser
-		var timer = new Timer(totalTime = levelCharacteristics.levelLength(), frecuency = 1, user = self)
+		var timer = new Timer(totalTime = caracteristicasDelNivel.nivelLength(), frecuency = 1, user = self)
 		var clockPosition = game.at(administradorDelJuego.centerX() - 1, administradorDelJuego.height() - 1)
-		numberDisplayGenerator.generateDigits(levelCharacteristics.levelLength() / 1000, timer, clockPosition)
+		numberDisplayGenerator.generateDigits(caracteristicasDelNivel.nivelLength() / 1000, timer, clockPosition)
 		timer.start()
 	}
 
 	method timerFinishedAction() {
 		const score = new Score()
-		score.setStars(levelCharacteristics.starScores())
-		screenManager.switchScreen(score) // score could be a wko
+		score.setStars(caracteristicasDelNivel.starScores())
+		administradorDePantalla.cambiarPantalla(score) // score could be a wko
 	}
 
-	override method background() = "tiledWood.jpg"
+	override method background() = "piso.jpg"
 
-	override method setInputs() {
+	override method indicarTeclas() {
 		// PLAYER 1
 		keyboard.w().onPressDo{ player1.move(up)}
 		keyboard.a().onPressDo{ player1.move(left)}
@@ -237,7 +237,7 @@ object playScreen inherits Screen {
 
 }
 
-class LevelCharacteristics {
+class CaracteristicasDelNivel {
 
 	method addNDesks(basePosition, n, direction) {
 		var desks = []
@@ -247,21 +247,21 @@ class LevelCharacteristics {
 
 }
 
-object level2 inherits LevelCharacteristics {
+object nivel2 inherits CaracteristicasDelNivel {
 
-	method levelNumber() = 2
+	method numeroDeNivel() = 2
 
-	method levelVisualObjects() {
+	method nivelVisualObjects() {
 		const middleCurvex1 = 9
 		const middleCurvex2 = middleCurvex1 + 4
 		const middleSectionHeightdown = 6
 		const middleSectionHeightUp = middleSectionHeightdown - 1
-		const levelObjects = [ // desks
+		const nivelObjects = [ // desks
 		self.addNDesks(game.origin(), 6, up), self.addNDesks(game.at(0, game.height() - 1), 4,down), self.addNDesks(game.at(1, game.height() - 1), 9, right), self.addNDesks(game.at(1, 0), 1, right), self.addNDesks(game.at(3, 0), 7, right), // weird middle part
 		self.addNDesks(game.at(middleCurvex1, 1), middleSectionHeightdown, up), self.addNDesks(game.at(middleCurvex1, game.height() - 2), middleSectionHeightUp, down), self.addNDesks(game.at(middleCurvex1 + 1, middleSectionHeightdown), middleCurvex2 - middleCurvex1 - 1, right), self.addNDesks(game.at(middleCurvex1 + 1, game.height() - 1 - middleSectionHeightUp), middleCurvex2 - middleCurvex1 - 1, right), self.addNDesks(game.at(middleCurvex2, middleSectionHeightdown), middleSectionHeightdown + 1, down), self.addNDesks(game.at(middleCurvex2, game.height() - 1), middleSectionHeightUp + 1, down), // end of weird middle part
 		self.addNDesks(game.at(middleCurvex2, game.height() - 1), 5, right), self.addNDesks(game.at(middleCurvex2 + 6, game.height() - 1), 3, right), self.addNDesks(game.at(middleCurvex2 + 1, 0), 2, right), self.addNDesks(game.at(middleCurvex2 + 5, 0), 4, right), self.addNDesks(administradorDelJuego.esquinaSuperiorDerecha().down(1), 3, down), self.addNDesks(administradorDelJuego.esquinaInferiorDerecha().up(1), 8, up) ]
-		levelObjects.add([ new DeliverSpot(position = game.at(administradorDelJuego.width() - 1, 9)), new ChoppingDesk(position = game.at(middleCurvex2 + 3, 0)), new ChoppingDesk(position = game.at(middleCurvex2 + 4, 0)), new Trash(position = game.at(middleCurvex2 + 5, game.height() - 1)), new Spawner(toSpawnIngredient = new Ingredient(name = "tomato", position = game.at(0, 6))), new Spawner(toSpawnIngredient = new Ingredient(name = "lettuce", position = game.at(0, 7))), new Spawner(toSpawnIngredient = new Ingredient(name = "meat", position = game.at(0, 8))), new Spawner(toSpawnIngredient = new Ingredient(name = "potato", position = game.at(0, 9))), new Spawner(toSpawnIngredient = new Plate(position = game.at(2, 0))), new Plate(position=game.at(3,0)), new Plate(position=game.at(4,0)) ])
-		return levelObjects.flatten()
+		nivelObjects.add([ new DeliverSpot(position = game.at(administradorDelJuego.width() - 1, 9)), new ChoppingDesk(position = game.at(middleCurvex2 + 3, 0)), new ChoppingDesk(position = game.at(middleCurvex2 + 4, 0)), new Trash(position = game.at(middleCurvex2 + 5, game.height() - 1)), new Spawner(toSpawnIngredient = new Ingredient(name = "tomato", position = game.at(0, 6))), new Spawner(toSpawnIngredient = new Ingredient(name = "lettuce", position = game.at(0, 7))), new Spawner(toSpawnIngredient = new Ingredient(name = "meat", position = game.at(0, 8))), new Spawner(toSpawnIngredient = new Ingredient(name = "potato", position = game.at(0, 9))), new Spawner(toSpawnIngredient = new Plate(position = game.at(2, 0))), new Plate(position=game.at(3,0)), new Plate(position=game.at(4,0)) ])
+		return nivelObjects.flatten()
 	}
 
 	method starScores() = [ 50, 100, 200 ]
@@ -275,15 +275,15 @@ object level2 inherits LevelCharacteristics {
 		return [ tomatoSalad, salad, potatoSalad, meatAndPotato ]
 	}
 
-	method levelLength() = 180000
+	method nivelLength() = 180000
 
 }
 
-object level1 inherits LevelCharacteristics {
+object nivel1 inherits CaracteristicasDelNivel {
 
-	method levelNumber() = 1
+	method numeroDeNivel() = 1
 
-	method levelVisualObjects() {
+	method nivelVisualObjects() {
 		var desks = [ self.addNDesks(game.origin(),6,up), self.addNDesks(game.origin().up(7),administradorDelJuego.height()-7,up), self.addNDesks(administradorDelJuego.esquinaSuperiorDerecha(),administradorDelJuego.width()-2,left), self.addNDesks(game.at(administradorDelJuego.centerX(),administradorDelJuego.height()-2),administradorDelJuego.height()-2,down), self.addNDesks(game.origin().right(1),2,right), self.addNDesks(administradorDelJuego.esquinaSuperiorDerecha().down(1),game.height()-1-5,down), self.addNDesks(administradorDelJuego.esquinaInferiorDerecha(), 4, up), self.addNDesks(game.origin().right(4),3,right), self.addNDesks(game.origin().right(8),administradorDelJuego.width()-12,right), self.addNDesks(administradorDelJuego.esquinaInferiorDerecha().left(1),2,left) ]
 		var stuff = [ new DeliverSpot(facing=left,position=game.origin().up(6)), new Trash(position=game.at(1,administradorDelJuego.height()-1)), new Spawner(toSpawnIngredient = new Ingredient(name="meat",state=fresh,position=administradorDelJuego.esquinaInferiorDerecha().left(3))), new Spawner(toSpawnIngredient = new Ingredient(name="potato",state=fresh,position=game.origin().right(3))), new ChoppingDesk(position=administradorDelJuego.esquinaInferiorDerecha().up(4)), new Spawner(toSpawnIngredient = new Plate(position = game.origin().right(7))) ]
 		var allObjects = desks.flatten()
@@ -300,16 +300,16 @@ object level1 inherits LevelCharacteristics {
 		return [ papas, carneConPapas ]
 	}
 
-	method levelLength() = 60000
+	method nivelLength() = 60000
 
 }
 
-class Score inherits Screen {
+class Score inherits Pantalla {
 
 	var stars = [ new Star(basePosition = self.starPosition(), xOffset=0), new Star(basePosition = self.starPosition(), xOffset=1), new Star(basePosition = self.starPosition(), xOffset=2) ]
 
-	override method setInputs() {
-		keyboard.enter().onPressdo({ screenManager.switchScreen(menu)})
+	override method indicarTeclas() {
+		keyboard.enter().onPressDo({ administradorDePantalla.cambiarPantalla(menu)})
 	}
 
 	override method show() {
