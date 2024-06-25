@@ -5,8 +5,8 @@
 - Lucas,Maidana
 - Kevin,Pallero
 - Facundo,Rodriguez
-- Irina,Bellota
-- Magno,Telechea
+- Irina,Belotta
+- Magno,Tellechea
 
 ## Capturas
 
